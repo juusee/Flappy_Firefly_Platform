@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 	public Text jumpVelocityText;
 	public Slider uiJumpPowerSlider;
 	public Text jumpPowerText;
+	public Text pointsDisplay;
 
 	Rigidbody playerRB;
 	float jumpVelocity = 80f;
@@ -135,6 +136,14 @@ public class PlayerMovement : MonoBehaviour {
 		currentJumpPower = maxJumpPower;
 		playerRB.isKinematic = true;
 		run = false;
+		pointsDisplay.text = "0";
+	}
+
+	void OnCollisionEnter (Collision col)
+	{
+		// Todo improve
+		int points = int.Parse (pointsDisplay.text) + 1;
+		pointsDisplay.text = points.ToString ();
 	}
 
 	public void changeJumpVelocity(float jumpVelocity) {

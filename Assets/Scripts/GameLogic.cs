@@ -15,7 +15,6 @@ public class GameLogic : MonoBehaviour {
 	public Transform player;
 	public Transform platformSpawnPoint;
 	public float platformBufferFront;
-	public Text pointsDisplay;
 
 	List<GameObject> platforms = new List<GameObject> ();
 	List<GameObject> trees = new List<GameObject> ();
@@ -34,7 +33,6 @@ public class GameLogic : MonoBehaviour {
 
 	void Update ()
 	{
-		pointsDisplay.text = "" + Mathf.Floor (mover.transform.localPosition.x / -10);
 		// todo set inactive when falling too much
 		if (player.transform.position.y < -300f) {
 			player.gameObject.SetActive (false);
@@ -157,10 +155,6 @@ public class GameLogic : MonoBehaviour {
 		newPlatform.transform.name = newPlatform.transform.name + platformCount;
 		newPlatform.SetActive (false);
 		return newPlatform;
-	}
-
-	void OnDisable() {
-		pointsDisplay.text = "" + 0;
 	}
 
 	public void Reset ()
