@@ -5,28 +5,33 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
 
-	Rigidbody playerRB;
-	public float xVelocity;
-	public float moveVelocity;
-	public float smooth = 2.0F;
-	public float tiltAngle = 30.0F;
-	public float jumpVelocity = 60f;
-
 	public Slider jumpPowerSlider;
 
-	bool inverse = false;
-	float startYRotation;
-	float prevJumpTime = 0f;
+	public Slider jumpVelocitySlider;
+	public Text jumpVelocityText;
+	public Slider uiJumpPowerSlider;
+	public Text jumpPowerText;
 
+	Rigidbody playerRB;
+	float jumpVelocity = 80f;
+	float prevJumpTime = 0f;
 	float maxJumpPower = 100f;
 	float currentJumpPower = 100f;
-	float jumpPower = 33f;
+	float jumpPower = 22f;
+
+	bool run = false;
 
 	void Awake ()
 	{
 		playerRB = GetComponent<Rigidbody>();
 		playerRB.velocity = new Vector3 (10f, 0f, 0f);
-		startYRotation = transform.eulerAngles.y;
+
+		jumpVelocitySlider.onValueChanged.AddListener(changeJumpVelocity);
+		jumpVelocitySlider.value = jumpVelocity;
+		jumpVelocityText.text = jumpVelocity.ToString ();
+		uiJumpPowerSlider.onValueChanged.AddListener(changeJumpPower);
+		uiJumpPowerSlider.value = jumpPower;
+		jumpPowerText.text = jumpPower.ToString ();
 	}
 
 	void Update ()
@@ -100,18 +105,18 @@ public class PlayerMovement : MonoBehaviour {
 		currentJumpPower = currentJumpPower - jumpPower < 0 ? 0 : currentJumpPower - jumpPower;
 				
 		playerRB.velocity = Vector3.zero;
-		playerRB.angularVelocity = Vector3.zero;
+		//playerRB.angularVelocity = Vector3.zero;
 
 		float max = Screen.width / 2f;
-		float direction = 1f;
-		
+
 		if (x > max) {
 			x -= max;
 		} else {
 			x = x - max;
 		}
 
-		float angle = x / max * 45f;
+		float maxAngle = 25f;
+		float angle = x / max * maxAngle;
 
 		Vector3 angleVelocity = Quaternion.AngleAxis (angle, Vector3.right) * Vector3.up;
 
@@ -122,11 +127,23 @@ public class PlayerMovement : MonoBehaviour {
 	void OnEnable ()
 	{		
 		playerRB.isKinematic = false;
+		run = true;
 	}
 
 	void OnDisable ()
 	{
 		currentJumpPower = maxJumpPower;
 		playerRB.isKinematic = true;
+		run = false;
+	}
+
+	public void changeJumpVelocity(float jumpVelocity) {
+		this.jumpVelocity = jumpVelocity;
+		jumpVelocityText.text = jumpVelocity.ToString ();
+	}
+
+	public void changeJumpPower(float jumpPower) {
+		this.jumpPower = jumpPower;
+		jumpPowerText.text = jumpPower.ToString ();
 	}
 }

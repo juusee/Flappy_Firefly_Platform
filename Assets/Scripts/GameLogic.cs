@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GameLogic : MonoBehaviour {
 
@@ -19,6 +20,7 @@ public class GameLogic : MonoBehaviour {
 	List<GameObject> platforms = new List<GameObject> ();
 	List<GameObject> trees = new List<GameObject> ();
 	float platformLength;
+	float platformWidth;
 	float platformGap = 60f;
 	int platformBufferBack = 2;
 	int platformCount = 0;
@@ -27,6 +29,7 @@ public class GameLogic : MonoBehaviour {
 	void Start ()
 	{
 		platformLength = platformBig.transform.FindChild("Platform").GetComponent<Renderer> ().bounds.size.x;
+		platformWidth = platformBig.transform.FindChild("Platform").GetComponent<Renderer> ().bounds.size.z;
 	}
 
 	void Update ()
@@ -50,42 +53,64 @@ public class GameLogic : MonoBehaviour {
 			platform.transform.parent = mover;
 			platform.transform.localPosition = new Vector3 (
 				platformSpawnPoint.localPosition.x,
-				prevPlatformPos.y + Random.Range(-25f, 40f),
-				prevPlatformPos.z + Random.Range(-45f, 45f)
+				prevPlatformPos.y + weightedRandom(new Dictionary<float, float> () {{0, 1}, {5, 2}, {10, 3}, {15, 3}, {20, 6}, {25, 10}}),
+				// if changed, set player jump max angle in PlayerMovement
+				prevPlatformPos.z + weightedRandom(new Dictionary<float, float> () {{15, 1}, {20, 1}, {25, 1}, {30, 3}, {35, 3}, {45, 3}}, true) // Random.Range(-45f, 45f)
 			);
 
 			platform.SetActive (true);
 			prevPlatformPos = platform.transform.localPosition;
 			++platformCount;
 
-			GameObject tree1 = getTree ();
-			tree1.transform.parent = mover;
-			// Todo count platform width so tree wont get trough platform
-			float random = Random.value < 0.5 ? Random.Range (-50f, -35f) : Random.Range (30f, 45f);
-			tree1.transform.localPosition = new Vector3 (
-				platformSpawnPoint.localPosition.x + Random.Range(-25f, 25f),
-				platform.transform.localPosition.y + Random.Range(-25f, 25f),
-				platform.transform.localPosition.z + random
-			);
-			tree1.SetActive (true);
+			SpawnTrees (4, new Vector3(
+				platform.transform.localPosition.x,
+				prevPlatformPos.y,
+				platform.transform.localPosition.z
+			));
+		}
+	}
 
-			GameObject tree2 = getTree ();
-			tree2.transform.parent = mover;
-			tree2.transform.localPosition = new Vector3 (
-				platformSpawnPoint.localPosition.x + Random.Range(-25f, 25f),
-				platform.transform.localPosition.y + Random.Range(-25f, 25f),
-				platform.transform.localPosition.z + random * -1 + Random.Range(0, 10f)
-			);
-			tree2.SetActive (true);
+	float weightedRandom(Dictionary<float, float> valuesAndWeights, bool randomMinus = false) {
+		float sumOfWeights = valuesAndWeights.Sum (pair => pair.Value);
+		float random = Random.Range (0, sumOfWeights);
+		float currentMin;
+		float currentMax = 0;
+		Dictionary<float, float> valuesAndWeightsOrdered = valuesAndWeights.OrderBy (pair => pair.Value).ToDictionary(p => p.Key, p => p.Value);
+		foreach (KeyValuePair<float, float> pair in valuesAndWeightsOrdered) {
+			currentMin = currentMax;
+			currentMax += pair.Value;
+			if (random > currentMin && random <= currentMax) {
+				if (randomMinus) {
+					return Random.value > 0.5f ? pair.Key : -pair.Key;
+				}
+				return pair.Key;
+			}
 
-			GameObject tree3 = getTree ();
-			tree3.transform.parent = mover;
-			tree3.transform.localPosition = new Vector3 (
-				platformSpawnPoint.localPosition.x + Random.Range(-25f, 25f),
-				platform.transform.localPosition.y + Random.Range(-25f, 25f),
-				platform.transform.localPosition.z + random * -1 + Random.Range(0, 10f)
+		}
+		return valuesAndWeightsOrdered.Last ().Key;
+	}
+
+	void SpawnTrees(float count, Vector3 platformPosition) {
+		float areaLength = platformLength + 40f;
+		float areaWidth = 40f;
+		float areaHeight = 30f;
+		float treeStartXPos = platformPosition.x - areaLength / 2f;
+		float treeStartYPos = platformPosition.y - 20f;
+		float treeEndYPos = platformPosition.y + 20f;
+		float treeStartZPos = platformWidth / 2 + 20f;
+		float treeEndZPos = treeStartZPos + areaWidth;
+
+		float slotLength = (areaLength) / count;
+		for (int i = 0; i < count; ++i) {
+			GameObject tree = getTree ();
+			tree.transform.parent = mover;
+			float side = i % 2 == 0 ? -1 : 1;
+			tree.transform.localPosition = new Vector3 (
+				treeStartXPos + Random.Range(slotLength * i, slotLength * (i + 1)),
+				Random.Range(treeStartYPos, treeEndYPos),
+				platformPosition.z + Random.Range(treeStartZPos, treeEndZPos) * side
 			);
-			tree3.SetActive (true);
+			tree.SetActive (true);
 		}
 	}
 

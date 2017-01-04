@@ -8,7 +8,8 @@ public class GameManager : MonoBehaviour {
 	public PlayerManager playerManager;
 	public MoverManager moverManager;
 	public GameLogic gameLogic;
-	public GameObject panel;
+	public GameObject menuPanel;
+	public GameObject playingPanel;
 	public GameObject startCounter;
 
 	WaitForSeconds endWait;
@@ -32,27 +33,28 @@ public class GameManager : MonoBehaviour {
 		playerManager.Reset ();
 		moverManager.DisableControl ();
 		moverManager.Reset ();
+		gameLogic.GetComponent<GameLogic> ().enabled = true;
+		gameLogic.Reset ();
 
-		panel.SetActive (true);
 		yield return StartCoroutine (RoundStarting());
-		panel.SetActive (false);
-
-		startCounter.SetActive (true);
 		yield return StartCoroutine (StartCounter (3));
-		startCounter.SetActive (false);
 		yield return StartCoroutine (RoundPlaying());
 		yield return StartCoroutine (RoundEnding());
 		StartCoroutine (GameLoop ());
 	}
 
 	IEnumerator RoundStarting ()
-	{
+	{		
+		playingPanel.SetActive (false);
+		menuPanel.SetActive (true);
+
 		while (!start) {
 			yield return null;
 		}
 
-		gameLogic.Reset ();
-		gameLogic.GetComponent<GameLogic> ().enabled = true;
+		menuPanel.SetActive (false);
+		playingPanel.SetActive (true);
+		startCounter.SetActive (true);
 
 		start = false;
 	}
@@ -66,6 +68,7 @@ public class GameManager : MonoBehaviour {
 		if (count > 0) {
 			yield return StartCounter (count);
 		}
+		startCounter.SetActive (false);
 	}
 
 	IEnumerator RoundPlaying ()
