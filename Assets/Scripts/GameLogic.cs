@@ -12,6 +12,9 @@ public class GameLogic : MonoBehaviour {
 	public GameObject platformBig;
 	public GameObject treeRock1;
 	public GameObject treeRock2;
+	public GameObject treeRock3;
+	public GameObject treeRock4;
+	public GameObject treeRock5;
 	public Transform player;
 	public Transform platformSpawnPoint;
 	public float platformBufferFront;
@@ -60,7 +63,7 @@ public class GameLogic : MonoBehaviour {
 			prevPlatformPos = platform.transform.localPosition;
 			++platformCount;
 
-			SpawnTrees (4, new Vector3(
+			SpawnTrees (6, new Vector3(
 				platform.transform.localPosition.x,
 				prevPlatformPos.y,
 				platform.transform.localPosition.z
@@ -90,7 +93,7 @@ public class GameLogic : MonoBehaviour {
 
 	void SpawnTrees(float count, Vector3 platformPosition) {
 		float areaLength = platformLength + 40f;
-		float areaWidth = 40f;
+		float areaWidth = 80f;
 		float areaHeight = 30f;
 		float treeStartXPos = platformPosition.x - areaLength / 2f;
 		float treeStartYPos = platformPosition.y - 20f;
@@ -122,10 +125,16 @@ public class GameLogic : MonoBehaviour {
 		}
 		if (newTree == null) {
 			float randomValue = Random.value;
-			if (randomValue < 0.5f) {
+			if (randomValue < 0.20f) {
 				newTree = (GameObject) Instantiate (treeRock1);
-			} else {
+			} else if (randomValue < 0.40f) {
 				newTree = (GameObject) Instantiate (treeRock2);
+			} else if (randomValue < 0.60f) {
+				newTree = (GameObject) Instantiate (treeRock3);
+			} else if (randomValue < 0.80f) {
+				newTree = (GameObject) Instantiate (treeRock4);
+			} else {
+				newTree = (GameObject) Instantiate (treeRock5);
 			}
 			trees.Add (newTree);
 		}
@@ -171,5 +180,10 @@ public class GameLogic : MonoBehaviour {
 		platformCount = 0;
 		// todo
 		prevPlatformPos = new Vector3 (55f, -9f, 0f);
+		SpawnTrees (6, new Vector3(
+			platformSpawnPoint.transform.localPosition.x,
+			0,
+			platformSpawnPoint.transform.localPosition.z
+		));
 	}
 }

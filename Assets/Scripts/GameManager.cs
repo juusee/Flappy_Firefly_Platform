@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
 	public GameLogic gameLogic;
 	public GameObject menuPanel;
 	public GameObject playingPanel;
+	public GameObject setupPanel;
 	public GameObject startCounter;
 
 	WaitForSeconds endWait;
@@ -46,6 +47,7 @@ public class GameManager : MonoBehaviour {
 	IEnumerator RoundStarting ()
 	{		
 		playingPanel.SetActive (false);
+		setupPanel.SetActive (false);
 		menuPanel.SetActive (true);
 
 		while (!start) {
@@ -86,5 +88,10 @@ public class GameManager : MonoBehaviour {
 		playerManager.DisableControl ();
 		moverManager.DisableControl ();
 		yield return endWait;
+	}
+
+	public void ShowSetup(bool show) {
+		menuPanel.SetActive (!show);
+		setupPanel.SetActive (show);
 	}
 }
