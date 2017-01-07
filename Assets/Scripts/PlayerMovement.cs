@@ -46,47 +46,6 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 		JumpPowerSlider.value = CurrentJumpPower;
-
-		/* GOD MODE
-
-		float jumpLength = 36f;
-		GameObject reallyClosest = null;
-		GameObject closestPlatform = null;
-		foreach (GameObject p in GameObject.FindGameObjectsWithTag("Platform")) {
-			if (p.transform.position.x > transform.position.x && (closestPlatform == null ||
-				(p.transform.position.x - transform.position.x) < (closestPlatform.transform.position.x - transform.position.x))) {
-				closestPlatform = p;
-			}
-			if (reallyClosest == null || Mathf.Abs (p.transform.position.x - transform.position.x) < Mathf.Abs (reallyClosest.transform.position.x - transform.position.x)) {
-				reallyClosest = p;
-			}
-		}
-
-		float angle = Vector3.Angle (
-			new Vector3 (transform.position.x, transform.position.y, transform.position.z),
-			new Vector3 (closestPlatform.transform.position.x, closestPlatform.transform.position.y, closestPlatform.transform.position.z)
-		);
-
-		float xDiff = closestPlatform.transform.position.x - transform.position.x;
-		float yDiff = Mathf.Abs(closestPlatform.transform.position.x - transform.position.z);
-
-		angle = Mathf.Atan ((closestPlatform.transform.position.x - transform.position.x) / Mathf.Abs(closestPlatform.transform.position.z - transform.position.z)) * Mathf.Rad2Deg;
-
-		if (closestPlatform.transform.position.z < transform.position.z) {
-			angle = angle * -1f + 180f;
-		}
-
-		transform.rotation = Quaternion.AngleAxis ((angle - 90f), Vector3.up);
-
-		bool onPlatform = false;
-		if ((Mathf.Abs(reallyClosest.transform.position.y) - Mathf.Abs(transform.position.y)) < 6 && Vector3.Distance (transform.position, reallyClosest.transform.position) < 21) {
-			onPlatform = true;
-		}
-
-		if (!onPlatform && (closestPlatform.transform.position.x - transform.position.x) > jumpLength / 2f) {
-			print ("JUMP");
-		}
-		*/
 	}
 
 	void FixedUpdate ()
