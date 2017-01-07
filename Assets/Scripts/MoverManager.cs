@@ -4,31 +4,31 @@ using UnityEngine;
 
 public class MoverManager : MonoBehaviour {
 
-	public GameObject moverInstance;
+	public GameObject MoverInstance;
 
-	Vector3 moverSpawnPoint;
-	Mover mover;
+	Vector3 MoverSpawnPoint;
+	Mover Mover;
 
 	void OnEnable() {
-		moverSpawnPoint = new Vector3(0f, 0f, 0f);
-		mover = moverInstance.GetComponent<Mover> ();
+		MoverSpawnPoint = new Vector3(0f, 0f, 0f);
+		Mover = MoverInstance.GetComponent<Mover> ();
 
 	}
 
 	public void Reset()
 	{
-		moverInstance.transform.position = moverSpawnPoint;
-		moverInstance.SetActive (false);
-		moverInstance.SetActive (true);
+		MoverInstance.transform.position = MoverSpawnPoint;
+		MoverInstance.SetActive (false);
+		MoverInstance.SetActive (true);
 	}
 
 	public void DisableControl()
 	{
-		mover.enabled = false;
+		Mover.enabled = false;
 	}
 
 	public void EnableControl()
 	{
-		mover.enabled = true;
+		Mover.enabled = true;
 	}
 }

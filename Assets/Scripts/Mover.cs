@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Mover : MonoBehaviour {
 
-	public float speed;
+	float Speed = 30f;
 
 	Rigidbody moverRB;
 
@@ -17,7 +17,7 @@ public class Mover : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		moverRB.velocity = Vector3.left * speed;
+		moverRB.velocity = Vector3.left * Speed;
 	}
 
 	void OnEnable ()

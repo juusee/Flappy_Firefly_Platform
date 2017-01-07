@@ -5,9 +5,9 @@ using System.Xml.Serialization;
 
 public class DataStorage
 {
-	public static void SaveToFile<T>(T dataToStore)
+	public static void SaveToFile<T>(string fileName, T dataToStore)
 	{
-		string fileName = Application.persistentDataPath + "/" + typeof(T).Name + ".json";
+		fileName = Application.persistentDataPath + "/" + fileName + ".json";
 
 		try
 		{
@@ -20,11 +20,10 @@ public class DataStorage
 		}
 	}
 
-	public static T LoadFromFile<T>()
+	public static T LoadFromFile<T>(string fileName)
 	{
 		T storedData = default(T);
-		string fileName = Application.persistentDataPath + "/" + typeof(T).Name + ".json";
-
+		fileName = Application.persistentDataPath + "/" + fileName + ".json";
 		try
 		{
 			string serializedData = File.ReadAllText(fileName);
@@ -38,9 +37,9 @@ public class DataStorage
 		return storedData;
 	}
 
-	public static void RemoveData<T>()
+	public static void RemoveData<T>(string fileName)
 	{
-		string fileName = Application.persistentDataPath + "/" + typeof(T).Name + ".json";
+		fileName = Application.persistentDataPath + "/" + fileName + ".json";
 
 		try
 		{

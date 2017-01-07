@@ -4,94 +4,85 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-	public float endDelay = 2.5f;
-	public PlayerManager playerManager;
-	public MoverManager moverManager;
-	public GameLogic gameLogic;
-	public GameObject menuPanel;
-	public GameObject playingPanel;
-	public GameObject setupPanel;
-	public GameObject startCounter;
+	public PlayerManager PlayerManager;
+	public MoverManager MoverManager;
+	public CanvasManager CanvasManager;
+	public GameLogic GameLogic;
 
+	public Text highScoreText;
+
+	float endDelay = 2.5f;
 	WaitForSeconds endWait;
-	bool start = false;
+	Data data = new Data();
+	static bool start = false;
 
-	public void startGame()
-	{
-		start = true;
-	}
 
 	void Start ()
 	{
 		endWait = new WaitForSeconds (endDelay);
 
+		Data d = DataStorage.LoadFromFile<Data> ("data");
+		int highScoreVal = 0;
+		if (d != null) {
+			data = d;
+			highScoreVal = d.highScore;
+		}
+		highScoreText.text = highScoreVal.ToString ();
 		StartCoroutine (GameLoop());
 	}
 
 	IEnumerator GameLoop ()
 	{
-		playerManager.DisableControl ();
-		playerManager.Reset ();
-		moverManager.DisableControl ();
-		moverManager.Reset ();
-		gameLogic.GetComponent<GameLogic> ().enabled = true;
-		gameLogic.Reset ();
+		CanvasManager.Reset ();
+		PlayerManager.DisableControl ();
+		PlayerManager.Reset ();
+		MoverManager.DisableControl ();
+		MoverManager.Reset ();
+		GameLogic.GetComponent<GameLogic> ().enabled = true;
+		GameLogic.Reset ();
 
 		yield return StartCoroutine (RoundStarting());
-		yield return StartCoroutine (StartCounter (3));
 		yield return StartCoroutine (RoundPlaying());
 		yield return StartCoroutine (RoundEnding());
 		StartCoroutine (GameLoop ());
 	}
 
 	IEnumerator RoundStarting ()
-	{		
-		playingPanel.SetActive (false);
-		setupPanel.SetActive (false);
-		menuPanel.SetActive (true);
-
+	{
 		while (!start) {
 			yield return null;
 		}
 
-		menuPanel.SetActive (false);
-		playingPanel.SetActive (true);
-		startCounter.SetActive (true);
-
 		start = false;
-	}
-
-	IEnumerator StartCounter (int count)
-	{
-		WaitForSeconds countWait = new WaitForSeconds (0.8f);
-		startCounter.GetComponentInChildren<Text> ().text = count.ToString();
-		yield return countWait;
-		--count;
-		if (count > 0) {
-			yield return StartCounter (count);
-		}
-		startCounter.SetActive (false);
 	}
 
 	IEnumerator RoundPlaying ()
 	{
-		playerManager.EnableControl ();
-		moverManager.EnableControl ();
+		PlayerManager.EnableControl ();
+		MoverManager.EnableControl ();
 
-		while (playerManager.playerInstance.activeSelf) {
+		while (PlayerManager.PlayerInstance.activeSelf) {
 			yield return null;
 		}
 	}
 
 	IEnumerator RoundEnding ()
 	{
-		playerManager.DisableControl ();
-		moverManager.DisableControl ();
+		PlayerManager.DisableControl ();
+		MoverManager.DisableControl ();
+		if (PlayerMovement.Score > data.highScore) {
+			highScoreText.text = PlayerMovement.Score.ToString ();
+			data.highScore = PlayerMovement.Score;
+			DataStorage.SaveToFile ("data", data);
+		}
 		yield return endWait;
 	}
 
-	public void ShowSetup(bool show) {
-		menuPanel.SetActive (!show);
-		setupPanel.SetActive (show);
+	public static void StartGame() {
+		start = true;	
 	}
+}
+
+class Data {
+	public int highScore = 0;
 }

@@ -5,34 +5,34 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
 
-	public Slider jumpPowerSlider;
+	public Slider JumpPowerSlider;
+	public Text PointsDisplay;
 
-	public Slider jumpVelocitySlider;
-	public Text jumpVelocityText;
-	public Slider uiJumpPowerSlider;
-	public Text jumpPowerText;
-	public Text pointsDisplay;
+	public Slider SetupJumpVelocitySlider;
+	public Text SetupJumpVelocityText;
+	public Slider SetupJumpPowerSlider;
+	public Text SetupJumpPowerText;
 
-	Rigidbody playerRB;
-	float jumpVelocity = 80f;
-	float prevJumpTime = 0f;
-	float maxJumpPower = 100f;
-	float currentJumpPower = 100f;
-	float jumpPower = 22f;
+	public static int Score = 0;
 
-	bool run = false;
+	Rigidbody PlayerRB;
+	float JumpVelocity = 80f;
+	float PrevJumpTime = 0f;
+	float MaxJumpPower = 100f;
+	float CurrentJumpPower = 100f;
+	float JumpPower = 22f;
 
 	void Awake ()
 	{
-		playerRB = GetComponent<Rigidbody>();
-		playerRB.velocity = new Vector3 (10f, 0f, 0f);
+		PlayerRB = GetComponent<Rigidbody>();
+		PlayerRB.velocity = new Vector3 (10f, 0f, 0f);
 
-		jumpVelocitySlider.onValueChanged.AddListener(changeJumpVelocity);
-		jumpVelocitySlider.value = jumpVelocity;
-		jumpVelocityText.text = jumpVelocity.ToString ();
-		uiJumpPowerSlider.onValueChanged.AddListener(changeJumpPower);
-		uiJumpPowerSlider.value = jumpPower;
-		jumpPowerText.text = jumpPower.ToString ();
+		SetupJumpVelocitySlider.onValueChanged.AddListener(ChangeJumpVelocity);
+		SetupJumpVelocitySlider.value = JumpVelocity;
+		SetupJumpVelocityText.text = JumpVelocity.ToString ();
+		SetupJumpPowerSlider.onValueChanged.AddListener(ChangeJumpPower);
+		SetupJumpPowerSlider.value = JumpPower;
+		SetupJumpPowerText.text = JumpPower.ToString ();
 	}
 
 	void Update ()
@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour {
 					Jump (Input.GetTouch (i).position.x);
 			}
 		}
-		jumpPowerSlider.value = currentJumpPower;
+		JumpPowerSlider.value = CurrentJumpPower;
 
 		/* GOD MODE
 
@@ -91,21 +91,21 @@ public class PlayerMovement : MonoBehaviour {
 
 	void FixedUpdate ()
 	{
-		playerRB.AddForce (Vector3.down * 150f);
+		PlayerRB.AddForce (Vector3.down * 150f);
 
-		if (currentJumpPower < maxJumpPower) {
-			currentJumpPower += 0.4f;
+		if (CurrentJumpPower < MaxJumpPower) {
+			CurrentJumpPower += 0.4f;
 		}
 	}
 
 	void Jump(float x) {
-		if ((Time.time - prevJumpTime) < 0.2f || currentJumpPower < jumpPower) {
+		if ((Time.time - PrevJumpTime) < 0.2f || CurrentJumpPower < JumpPower) {
 			return;
 		}
 
-		currentJumpPower = currentJumpPower - jumpPower < 0 ? 0 : currentJumpPower - jumpPower;
+		CurrentJumpPower = CurrentJumpPower - JumpPower < 0 ? 0 : CurrentJumpPower - JumpPower;
 				
-		playerRB.velocity = Vector3.zero;
+		PlayerRB.velocity = Vector3.zero;
 		//playerRB.angularVelocity = Vector3.zero;
 
 		float max = Screen.width / 2f;
@@ -121,38 +121,37 @@ public class PlayerMovement : MonoBehaviour {
 
 		Vector3 angleVelocity = Quaternion.AngleAxis (angle, Vector3.right) * Vector3.up;
 
-		playerRB.AddForce (angleVelocity * jumpVelocity, ForceMode.Impulse);
-		prevJumpTime = Time.time;
+		PlayerRB.AddForce (angleVelocity * JumpVelocity, ForceMode.Impulse);
+		PrevJumpTime = Time.time;
 	}
 
 	void OnEnable ()
 	{		
-		playerRB.isKinematic = false;
-		run = true;
+		PlayerRB.isKinematic = false;
 	}
 
 	void OnDisable ()
 	{
-		currentJumpPower = maxJumpPower;
-		playerRB.isKinematic = true;
-		run = false;
-		pointsDisplay.text = "0";
+		CurrentJumpPower = MaxJumpPower;
+		PlayerRB.isKinematic = true;
+		Score = int.Parse(PointsDisplay.text);
+		PointsDisplay.text = "0";
 	}
 
 	void OnCollisionEnter (Collision col)
 	{
 		// Todo improve
-		int points = int.Parse (pointsDisplay.text) + 1;
-		pointsDisplay.text = points.ToString ();
+		int points = int.Parse (PointsDisplay.text) + 1;
+		PointsDisplay.text = points.ToString ();
 	}
 
-	public void changeJumpVelocity(float jumpVelocity) {
-		this.jumpVelocity = jumpVelocity;
-		jumpVelocityText.text = jumpVelocity.ToString ();
+	public void ChangeJumpVelocity(float jumpVelocity) {
+		this.JumpVelocity = jumpVelocity;
+		SetupJumpVelocityText.text = jumpVelocity.ToString ();
 	}
 
-	public void changeJumpPower(float jumpPower) {
-		this.jumpPower = jumpPower;
-		jumpPowerText.text = jumpPower.ToString ();
+	public void ChangeJumpPower(float jumpPower) {
+		this.JumpPower = jumpPower;
+		SetupJumpPowerText.text = jumpPower.ToString ();
 	}
 }

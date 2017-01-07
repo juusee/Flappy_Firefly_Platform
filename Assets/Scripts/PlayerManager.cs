@@ -3,32 +3,31 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour {
 
-	public GameObject playerInstance;
+	public GameObject PlayerInstance;
 
-	Vector3 playerSpawnPoint;
-	PlayerMovement playerMovement;
+	Vector3 PlayerSpawnPoint;
+	PlayerMovement PlayerMovement;
 
 	void OnEnable() {
-		//playerSpawnPoint = playerInstance.transform.position;
-		playerSpawnPoint = new Vector3(0f, 0f, 0f);
-		playerMovement = playerInstance.GetComponent<PlayerMovement> ();
+		PlayerSpawnPoint = new Vector3(0f, 0f, 0f);
+		PlayerMovement = PlayerInstance.GetComponent<PlayerMovement> ();
 	
 	}
 
 	public void Reset()
 	{
-		playerInstance.transform.position = playerSpawnPoint;
-		playerInstance.SetActive(false);
-		playerInstance.SetActive(true);
+		PlayerInstance.transform.position = PlayerSpawnPoint;
+		PlayerInstance.SetActive(false);
+		PlayerInstance.SetActive(true);
 	}
 
 	public void DisableControl()
 	{
-		playerMovement.enabled = false;
+		PlayerMovement.enabled = false;
 	}
 
 	public void EnableControl()
 	{
-		playerMovement.enabled = true;
+		PlayerMovement.enabled = true;
 	}
 }
