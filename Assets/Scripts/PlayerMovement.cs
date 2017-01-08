@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour {
 	float CurrentJumpPower = 100f;
 	float JumpPower = 22f;
 
+	float acceleration = 3f;
+	float terminalVelocity = 100f;
+
 	void Awake ()
 	{
 		PlayerRB = GetComponent<Rigidbody>();
@@ -50,7 +53,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	void FixedUpdate ()
 	{
-		PlayerRB.AddForce (Vector3.down * 150f);
+		if (-PlayerRB.velocity.y < terminalVelocity) {
+			PlayerRB.AddForce (Vector3.down * acceleration, ForceMode.VelocityChange);
+		}
 
 		if (CurrentJumpPower < MaxJumpPower) {
 			CurrentJumpPower += 0.4f;
@@ -65,7 +70,7 @@ public class PlayerMovement : MonoBehaviour {
 		CurrentJumpPower = CurrentJumpPower - JumpPower < 0 ? 0 : CurrentJumpPower - JumpPower;
 				
 		PlayerRB.velocity = Vector3.zero;
-		//playerRB.angularVelocity = Vector3.zero;
+		// playerRB.angularVelocity = Vector3.zero;
 
 		float max = Screen.width / 2f;
 
@@ -80,7 +85,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		Vector3 angleVelocity = Quaternion.AngleAxis (angle, Vector3.right) * Vector3.up;
 
-		PlayerRB.AddForce (angleVelocity * JumpVelocity, ForceMode.Impulse);
+		PlayerRB.AddForce (angleVelocity * JumpVelocity, ForceMode.VelocityChange);
 		PrevJumpTime = Time.time;
 	}
 
