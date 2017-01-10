@@ -5,7 +5,6 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 
 	public PlayerManager PlayerManager;
-	public MoverManager MoverManager;
 	public CanvasManager CanvasManager;
 	public GameLogic GameLogic;
 
@@ -36,8 +35,6 @@ public class GameManager : MonoBehaviour {
 		CanvasManager.Reset ();
 		PlayerManager.DisableControl ();
 		PlayerManager.Reset ();
-		MoverManager.DisableControl ();
-		MoverManager.Reset ();
 		GameLogic.GetComponent<GameLogic> ().enabled = true;
 		GameLogic.Reset ();
 
@@ -59,7 +56,6 @@ public class GameManager : MonoBehaviour {
 	IEnumerator RoundPlaying ()
 	{
 		PlayerManager.EnableControl ();
-		MoverManager.EnableControl ();
 
 		while (PlayerManager.PlayerInstance.activeSelf) {
 			yield return null;
@@ -69,7 +65,6 @@ public class GameManager : MonoBehaviour {
 	IEnumerator RoundEnding ()
 	{
 		PlayerManager.DisableControl ();
-		MoverManager.DisableControl ();
 		if (PlayerMovement.Score > data.highScore) {
 			highScoreText.text = PlayerMovement.Score.ToString ();
 			data.highScore = PlayerMovement.Score;

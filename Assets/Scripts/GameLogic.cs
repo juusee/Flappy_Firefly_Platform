@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class GameLogic : MonoBehaviour {
-
-	public Transform Mover;
+	
 	public GameObject PlatformSmall;
 	public GameObject PlatformMedium;
 	public GameObject PlatformBig;
@@ -21,8 +20,7 @@ public class GameLogic : MonoBehaviour {
 
 	List<GameObject> Platforms = new List<GameObject> ();
 	List<GameObject> Trees = new List<GameObject> ();
-	float PlatformLength;
-	float PlatformWidth;
+	float GeneralPlatformLength;
 	float PlatformGap = 60f;
 	int PlatformBufferBack = 2;
 	int PlatformCount = 0;
@@ -30,8 +28,7 @@ public class GameLogic : MonoBehaviour {
 
 	void Start ()
 	{
-		PlatformLength = PlatformBig.transform.FindChild("Platform").GetComponent<Renderer> ().bounds.size.x;
-		PlatformWidth = PlatformBig.transform.FindChild("Platform").GetComponent<Renderer> ().bounds.size.z;
+		GeneralPlatformLength = PlatformMedium.transform.FindChild ("Platform").GetComponent<Renderer> ().bounds.size.x;
 	}
 
 	void Update ()
@@ -41,17 +38,18 @@ public class GameLogic : MonoBehaviour {
 			Player.gameObject.SetActive (false);
 		}
 
-		float distanceToSpawnPlatform = PlatformBufferFront * (PlatformLength + PlatformGap);
+		float distanceToSpawnPlatform = Player.localPosition.x + PlatformBufferFront * (GeneralPlatformLength + PlatformGap);
 
 		if (PlatformSpawnPoint.position.x < distanceToSpawnPlatform) {
+			GameObject platform = GetPlatform ();
+			float platformLength = platform.transform.FindChild ("Platform").GetComponent<Renderer> ().bounds.size.x;
+
 			PlatformSpawnPoint.localPosition = new Vector3 (
-				PlatformSpawnPoint.localPosition.x + PlatformLength + PlatformGap,
+				PlatformSpawnPoint.localPosition.x + platformLength + PlatformGap,
 				PlatformSpawnPoint.localPosition.y,
 				PlatformSpawnPoint.localPosition.z
 			);
 
-			GameObject platform = GetPlatform ();
-			platform.transform.parent = Mover;
 			platform.transform.localPosition = new Vector3 (
 				PlatformSpawnPoint.localPosition.x,
 				PrevPlatformPos.y + WeightedRandom(new Dictionary<float, float> () {{0, 1}, {5, 2}, {10, 3}, {15, 3}, {20, 6}, {25, 10}}),
@@ -67,7 +65,7 @@ public class GameLogic : MonoBehaviour {
 				platform.transform.localPosition.x,
 				PrevPlatformPos.y,
 				platform.transform.localPosition.z
-			));
+			), platform.transform.FindChild ("Platform"));
 		}
 	}
 
@@ -91,20 +89,21 @@ public class GameLogic : MonoBehaviour {
 		return valuesAndWeightsOrdered.Last ().Key;
 	}
 
-	void SpawnTrees(float count, Vector3 platformPosition) {
-		float areaLength = PlatformLength + 40f;
+	void SpawnTrees(float count, Vector3 platformPosition, Transform platform) {
+		float platformLength = platform.GetComponent<Renderer> ().bounds.size.x;
+		float platformWidth = platform.GetComponent<Renderer> ().bounds.size.z;
+		float areaLength = platformLength + 40f;
 		float areaWidth = 80f;
 		float areaHeight = 40f;
 		float treeStartXPos = platformPosition.x - areaLength / 2f;
 		float treeStartYPos = platformPosition.y - 20f;
 		float treeEndYPos = treeStartYPos + areaHeight;
-		float treeStartZPos = PlatformWidth / 2 + 20f;
+		float treeStartZPos = platformWidth / 2 + 20f;
 		float treeEndZPos = treeStartZPos + areaWidth;
 
 		float slotLength = (areaLength) / count;
 		for (int i = 0; i < count; ++i) {
 			GameObject tree = GetTree ();
-			tree.transform.parent = Mover;
 			float side = i % 2 == 0 ? -1 : 1;
 			tree.transform.localPosition = new Vector3 (
 				treeStartXPos + Random.Range(slotLength * i, slotLength * (i + 1)),
@@ -118,7 +117,7 @@ public class GameLogic : MonoBehaviour {
 	GameObject GetTree() {
 		GameObject newTree = null;
 		for (int i = 0; i < Trees.Count; ++i) {
-			if (!Trees[i].activeSelf || Trees[i].transform.position.x < (Player.transform.position.x - PlatformBufferBack * PlatformLength)) {
+			if (!Trees[i].activeSelf || Trees[i].transform.position.x < (Player.transform.position.x - PlatformBufferBack * GeneralPlatformLength)) {
 				newTree = Trees [i];
 				break;
 			}
@@ -145,7 +144,7 @@ public class GameLogic : MonoBehaviour {
 	GameObject GetPlatform() {
 		GameObject newPlatform = null;
 		for (int i = 0; i < Platforms.Count; ++i) {
-			if (!Platforms[i].activeSelf || Platforms[i].transform.position.x < (Player.transform.position.x - PlatformBufferBack * PlatformLength)) {
+			if (!Platforms[i].activeSelf || Platforms[i].transform.position.x < (Player.transform.position.x - PlatformBufferBack * GeneralPlatformLength)) {
 				newPlatform = Platforms [i];
 				break;
 			}
@@ -184,6 +183,6 @@ public class GameLogic : MonoBehaviour {
 			PlatformSpawnPoint.transform.localPosition.x,
 			0,
 			PlatformSpawnPoint.transform.localPosition.z
-		));
+		), GameObject.Find("StartPlatform").transform.FindChild ("Platform"));
 	}
 }

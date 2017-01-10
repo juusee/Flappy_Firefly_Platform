@@ -16,14 +16,17 @@ public class PlayerMovement : MonoBehaviour {
 	public static int Score = 0;
 
 	Rigidbody PlayerRB;
+	float velocity = 30f;
 	float JumpVelocity = 80f;
 	float PrevJumpTime = 0f;
 	float MaxJumpPower = 100f;
 	float CurrentJumpPower = 100f;
 	float JumpPower = 22f;
 
-	float acceleration = 3f;
-	float terminalVelocity = 100f;
+	float fallAcceleration = 3f;
+	float fallTerminalVelocity = 100f;
+
+	GameObject lastPlatform;
 
 	void Awake ()
 	{
@@ -53,8 +56,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	void FixedUpdate ()
 	{
-		if (-PlayerRB.velocity.y < terminalVelocity) {
-			PlayerRB.AddForce (Vector3.down * acceleration, ForceMode.VelocityChange);
+		if (-PlayerRB.velocity.y < fallTerminalVelocity) {
+			PlayerRB.velocity = new Vector3(velocity, PlayerRB.velocity.y - fallAcceleration, PlayerRB.velocity.z);
 		}
 
 		if (CurrentJumpPower < MaxJumpPower) {
@@ -69,8 +72,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		CurrentJumpPower = CurrentJumpPower - JumpPower < 0 ? 0 : CurrentJumpPower - JumpPower;
 				
-		PlayerRB.velocity = Vector3.zero;
-		// playerRB.angularVelocity = Vector3.zero;
+		PlayerRB.velocity = new Vector3 (PlayerRB.velocity.x, 0, 0);
 
 		float max = Screen.width / 2f;
 
@@ -104,9 +106,11 @@ public class PlayerMovement : MonoBehaviour {
 
 	void OnCollisionEnter (Collision col)
 	{
-		// Todo improve
-		int points = int.Parse (PointsDisplay.text) + 1;
-		PointsDisplay.text = points.ToString ();
+		if (col.gameObject.tag == "Platform" && lastPlatform != col.gameObject) {
+			int points = int.Parse (PointsDisplay.text) + 1;
+			PointsDisplay.text = points.ToString ();
+			lastPlatform = col.gameObject;
+		}
 	}
 
 	public void ChangeJumpVelocity(float jumpVelocity) {
