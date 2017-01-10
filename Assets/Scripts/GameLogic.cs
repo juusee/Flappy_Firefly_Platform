@@ -5,10 +5,10 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class GameLogic : MonoBehaviour {
-	
-	public GameObject PlatformSmall;
-	public GameObject PlatformMedium;
-	public GameObject PlatformBig;
+
+	public GameObject PlatformRockSmall;
+	public GameObject PlatformRockMedium;
+	public GameObject PlatformRockBig;
 	public GameObject TreeRock1;
 	public GameObject TreeRock2;
 	public GameObject TreeRock3;
@@ -28,7 +28,7 @@ public class GameLogic : MonoBehaviour {
 
 	void Start ()
 	{
-		GeneralPlatformLength = PlatformMedium.transform.FindChild ("Platform").GetComponent<Renderer> ().bounds.size.x;
+		GeneralPlatformLength = PlatformRockMedium.transform.FindChild ("Platform").GetComponent<Renderer> ().bounds.size.x;
 	}
 
 	void Update ()
@@ -152,11 +152,11 @@ public class GameLogic : MonoBehaviour {
 		if (newPlatform == null) {
 			float randomValue = Random.value;
 			if (randomValue < 0.33f) {
-				newPlatform = (GameObject) Instantiate (PlatformSmall);
+				newPlatform = (GameObject) Instantiate (PlatformRockSmall);
 			} else if (randomValue < 0.66f) {
-				newPlatform = (GameObject) Instantiate (PlatformMedium);
+				newPlatform = (GameObject) Instantiate (PlatformRockMedium);
 			} else {
-				newPlatform = (GameObject) Instantiate (PlatformBig);
+				newPlatform = (GameObject) Instantiate (PlatformRockBig);
 			}
 			Platforms.Add (newPlatform);
 		}
