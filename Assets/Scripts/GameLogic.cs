@@ -16,12 +16,12 @@ public class GameLogic : MonoBehaviour {
 	public GameObject TreeRock5;
 	public Transform Player;
 	public Transform PlatformSpawnPoint;
-	public float PlatformBufferFront;
 
 	List<GameObject> Platforms = new List<GameObject> ();
 	List<GameObject> Trees = new List<GameObject> ();
 	float GeneralPlatformLength;
 	float PlatformGap = 60f;
+	float PlatformBufferFront = 10;
 	int PlatformBufferBack = 2;
 	int PlatformCount = 0;
 	Vector3 PrevPlatformPos;
@@ -61,7 +61,7 @@ public class GameLogic : MonoBehaviour {
 			PrevPlatformPos = platform.transform.localPosition;
 			++PlatformCount;
 
-			SpawnTrees (6, new Vector3(
+			SpawnTrees (6, 2, new Vector3(
 				platform.transform.localPosition.x,
 				PrevPlatformPos.y,
 				platform.transform.localPosition.z
@@ -89,28 +89,31 @@ public class GameLogic : MonoBehaviour {
 		return valuesAndWeightsOrdered.Last ().Key;
 	}
 
-	void SpawnTrees(float count, Vector3 platformPosition, Transform platform) {
+	void SpawnTrees(float count, float rows, Vector3 platformPosition, Transform platform) {
 		float platformLength = platform.GetComponent<Renderer> ().bounds.size.x;
 		float platformWidth = platform.GetComponent<Renderer> ().bounds.size.z;
 		float areaLength = platformLength + 40f;
-		float areaWidth = 80f;
+		float areaWidth = 30f;
 		float areaHeight = 40f;
 		float treeStartXPos = platformPosition.x - areaLength / 2f;
 		float treeStartYPos = platformPosition.y - 20f;
 		float treeEndYPos = treeStartYPos + areaHeight;
-		float treeStartZPos = platformWidth / 2 + 20f;
-		float treeEndZPos = treeStartZPos + areaWidth;
+		float rowMargin = 35f;
 
 		float slotLength = (areaLength) / count;
-		for (int i = 0; i < count; ++i) {
-			GameObject tree = GetTree ();
-			float side = i % 2 == 0 ? -1 : 1;
-			tree.transform.localPosition = new Vector3 (
-				treeStartXPos + Random.Range(slotLength * i, slotLength * (i + 1)),
-				Random.Range(treeStartYPos, treeEndYPos),
-				platformPosition.z + Random.Range(treeStartZPos, treeEndZPos) * side
-			);
-			tree.SetActive (true);
+		for (int row = 0; row < rows; ++row) {
+			float treeStartZPos = platformWidth / 2 + 20f + row * (areaWidth + rowMargin);
+			float treeEndZPos = treeStartZPos + areaWidth;
+			for (int i = 0; i < count; ++i) {
+				GameObject tree = GetTree ();
+				float side = i % 2 == 0 ? -1 : 1;
+				tree.transform.localPosition = new Vector3 (
+					treeStartXPos + Random.Range (slotLength * i, slotLength * (i + 1)),
+					Random.Range (treeStartYPos, treeEndYPos),
+					platformPosition.z + Random.Range(treeStartZPos, treeEndZPos) * side
+				);
+				tree.SetActive (true);
+			}
 		}
 	}
 
@@ -179,7 +182,7 @@ public class GameLogic : MonoBehaviour {
 		PlatformCount = 0;
 		// todo
 		PrevPlatformPos = new Vector3 (55f, -9f, 0f);
-		SpawnTrees (6, new Vector3(
+		SpawnTrees (6, 2, new Vector3(
 			PlatformSpawnPoint.transform.localPosition.x,
 			0,
 			PlatformSpawnPoint.transform.localPosition.z
