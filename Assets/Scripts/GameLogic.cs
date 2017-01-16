@@ -33,11 +33,6 @@ public class GameLogic : MonoBehaviour {
 
 	void Update ()
 	{
-		// todo set inactive when falling too much
-		if (Player.transform.position.y < -300f) {
-			Player.gameObject.SetActive (false);
-		}
-
 		float distanceToSpawnPlatform = Player.localPosition.x + PlatformBufferFront * (GeneralPlatformLength + PlatformGap);
 
 		if (PlatformSpawnPoint.position.x < distanceToSpawnPlatform) {

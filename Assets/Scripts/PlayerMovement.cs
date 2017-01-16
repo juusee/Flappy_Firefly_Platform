@@ -27,6 +27,8 @@ public class PlayerMovement : MonoBehaviour {
 	float fallTerminalVelocity = 100f;
 
 	GameObject lastPlatform;
+	float lastPlatformPosY = 0;
+	float lengthToDie = 300;
 
 	void Awake ()
 	{
@@ -52,6 +54,10 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 		JumpPowerSlider.value = CurrentJumpPower;
+
+		if (lastPlatformPosY - transform.position.y > lengthToDie) {
+			gameObject.SetActive (false);
+		}
 	}
 
 	void FixedUpdate ()
@@ -102,6 +108,7 @@ public class PlayerMovement : MonoBehaviour {
 		PlayerRB.isKinematic = true;
 		Score = int.Parse(PointsDisplay.text);
 		PointsDisplay.text = "0";
+		lastPlatformPosY = 0;
 	}
 
 	void OnCollisionEnter (Collision col)
@@ -110,6 +117,7 @@ public class PlayerMovement : MonoBehaviour {
 			int points = int.Parse (PointsDisplay.text) + 1;
 			PointsDisplay.text = points.ToString ();
 			lastPlatform = col.gameObject;
+			lastPlatformPosY = col.transform.position.y;
 		}
 	}
 
